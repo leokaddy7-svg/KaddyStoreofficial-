@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Kaddystore | Add Products</title>
+<style>
+  :root{--bg:#0f1115;--card:#181b22;--text:#f2f4f8;--muted:#9aa3b2;--accent:#ff6a3d;--border:#262b36;--chip:#1f2430}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;padding:16px;max-width:640px;margin:0 auto 60px}
+  h1{font-size:1.4rem;margin:8px 0 4px}
+  h2{font-size:1.05rem;margin:22px 0 8px}
+  .sub{color:var(--muted);font-size:.9rem;margin-bottom:14px}
+  .box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:14px}
+  label{display:block;font-size:.82rem;color:var(--muted);margin:10px 0 4px}
+  input,select,textarea{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:1rem;font-family:inherit;outline:none}
+  input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+  button{padding:11px 16px;border:none;border-radius:10px;background:var(--accent);color:#fff;font-size:.95rem;font-weight:600;cursor:pointer}
+  button.alt{background:var(--chip);color:var(--text);border:1px solid var(--border)}
+  button.del{background:transparent;color:#ff6b6b;padding:4px 8px;font-size:.85rem}
+  .row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+  .item{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
+  .item:last-child{border-bottom:none}
+  .item img,.item .ph{width:46px;height:46px;border-radius:8px;object-fit:cover;background:var(--chip);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .item .meta{flex:1;min-width:0}
+  .item .meta b{display:block;font-size:.92rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .item .meta small{color:var(--muted)}
+  ol{padding-left:18px;color:var(--muted);font-size:.88rem}
+  ol li{margin-bottom:4px}
+  textarea{min-height:140px;font-family:monospace;font-size:.78rem}
+  #msg{color:#5fd38d;font-size:.9rem;margin-top:8px;min-height:1.2em}
+</style>
+</head>
+<body>
+
+<h1>Add products</h1>
+<p class="sub">Fill in one product, tap Add, repeat. Then copy the result into <b>products.js</b> and re-upload it.</p>
+
+<div class="box">
+  <ol>
+    <li>Open the product on AliExpress and copy your <b>affiliate link</b> (from the affiliate portal / share link).</li>
+    <li>Copy the <b>product title</b> and note the <b>price</b>.</li>
+    <li>Image: in your phone browser, long-press the main product image, then tap <b>Copy image address</b>.</li>
+  </ol>
+</div>
+
+<div class="box">
+  <label>Affiliate link *</label>
+  <input id="link" type="url" placeholder="https://s.click.aliexpress.com/e/...">
+  <label>Product name *</label>
+  <input id="name" type="text" placeholder="Portable Mini Blender">
+  <label>Price</label>
+  <input id="price" type="text" placeholder="$12.99">
+  <label>Image address</label>
+  <input id="image" type="url" placeholder="https://ae01.alicdn.com/kf/...jpg">
+  <label>Category</label>
+  <select id="cat"></select>
+  <label>Short description (optional)</label>
+  <input id="desc" type="text" placeholder="Fits in your bag, charges via USB-C">
+  <div class="row">
+    <button id="addBtn">Add product</button>
+    <button class="alt" id="clearBtn">Clear form</button>
+  </div>
+  <div id="msg"></div>
+</div>
+
+<h2>New category</h2>
+<div class="box">
+  <input id="newCat" type="text" placeholder="e.g. Fitness">
+  <div class="row"><button class="alt" id="addCatBtn">Add category</button></div>
+</div>
+
+<h2>Your products (<span id="count">0</span>)</h2>
+<div class="box" id="list"></div>
+
+<h2>Publish</h2>
+<div class="box">
+  <p class="sub">Copy this, replace everything inside <b>products.js</b> on your host, then re-upload.</p>
+  <textarea id="out" readonly></textarea>
+  <div class="row">
+    <button id="copyBtn">Copy products.js</button>
+    <button class="alt" id="dlBtn">Download file</button>
+    <button class="alt" id="resetBtn">Reset to published</button>
+  </div>
+</div>
+
+<script src="products.js"></script>
+<script>
+const KEY = "kaddy-admin-v1";
+let state;
+try { state = JSON.parse(localStorage.getItem(KEY)); } catch(e){ state = null; }
+if (!state || !state.products) state = { categories: [...CATEGORIES], products: JSON.parse(JSON.stringify(PRODUCTS)) };
+
+const $ = id => document.getElementById(id);
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e){} }
+function buildFile(){
+  return "const CATEGORIES = " + JSON.stringify(state.categories) + ";\n\nconst PRODUCTS = " + JSON.stringify(state.products, null, 2) + ";\n";
+}
+function flash(t){ $("msg").textContent = t; setTimeout(() => { $("msg").textContent = ""; }, 2500); }
+
+function renderCats(){
+  const cur = $("cat").value;
+  $("cat").innerHTML = "";
+  state.categories.forEach(c => { const o = document.createElement("option"); o.value = o.textContent = c; $("cat").appendChild(o); });
+  if (cur && state.categories.includes(cur)) $("cat").value = cur;
+}
+function renderList(){
+  const box = $("list");
+  box.innerHTML = "";
+  $("count").textContent = state.products.length;
+  if (!state.products.length) { box.innerHTML = '<p class="sub">No products yet.</p>'; }
+  state.products.forEach((p, i) => {
+    const row = document.createElement("div");
+    row.className = "item";
+    let thumb;
+    if (p.image) { thumb = document.createElement("img"); thumb.src = p.image; thumb.onerror = () => { thumb.replaceWith(ph()); }; }
+    else thumb = ph();
+    function ph(){ const d = document.createElement("div"); d.className = "ph"; d.textContent = "🛍️"; return d; }
+    const meta = document.createElement("div");
+    meta.className = "meta";
+    const b = document.createElement("b"); b.textContent = p.name;
+    const s = document.createElement("small"); s.textContent = (p.category || "") + (p.price ? " · " + p.price : "");
+    meta.append(b, s);
+    const d = document.createElement("button");
+    d.className = "del"; d.textContent = "Delete";
+    d.onclick = () => { state.products.splice(i, 1); save(); renderAll(); };
+    row.append(thumb, meta, d);
+    box.appendChild(row);
+  });
+}
+function renderOut(){ $("out").value = buildFile(); }
+function renderAll(){ renderCats(); renderList(); renderOut(); }
+
+$("addBtn").onclick = () => {
+  const link = $("link").value.trim(), name = $("name").value.trim();
+  if (!link || !name) { flash("Link and name are required."); return; }
+  state.products.unshift({
+    name, category: $("cat").value, price: $("price").value.trim(),
+    link, image: $("image").value.trim(), desc: $("desc").value.trim()
+  });
+  save(); renderAll();
+  ["link","name","price","image","desc"].forEach(id => $(id).value = "");
+  flash("Added. Don't forget to copy products.js below when done.");
+};
+$("clearBtn").onclick = () => ["link","name","price","image","desc"].forEach(id => $(id).value = "");
+$("addCatBtn").onclick = () => {
+  const c = $("newCat").value.trim();
+  if (c && !state.categories.includes(c)) { state.categories.push(c); save(); renderAll(); $("cat").value = c; }
+  $("newCat").value = "";
+};
+$("copyBtn").onclick = async () => {
+  try { await navigator.clipboard.writeText(buildFile()); flash("Copied!"); }
+  catch(e){ $("out").select(); document.execCommand("copy"); flash("Copied!"); }
+};
+$("dlBtn").onclick = () => {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([buildFile()], {type:"text/javascript"}));
+  a.download = "products.js"; a.click();
+};
+$("resetBtn").onclick = () => {
+  if (confirm("Discard unpublished changes and go back to the published list?")) {
+    state = { categories: [...CATEGORIES], products: JSON.parse(JSON.stringify(PRODUCTS)) };
+    save(); renderAll();
+  }
+};
+renderAll();
+</script>
+</body>
+</html>
