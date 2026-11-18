@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kaddystore | Tech That Makes Life Better</title>
+<meta name="description" content="Hand-picked gaming, travel, kitchen, smart home and pet tech that makes everyday life easier.">
+<style>
+  :root{
+    --bg:#0f1115; --card:#181b22; --text:#f2f4f8; --muted:#9aa3b2;
+    --accent:#ff6a3d; --border:#262b36; --chip:#1f2430;
+  }
+  :root[data-theme="light"]{
+    --bg:#f6f7fb; --card:#ffffff; --text:#14161b; --muted:#5b6475;
+    --accent:#e8501f; --border:#e3e6ee; --chip:#eceff6;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;transition:background .25s,color .25s}
+  header{position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:1px solid var(--border);padding:12px 16px}
+  .top{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:1000px;margin:0 auto}
+  .logo{font-size:1.35rem;font-weight:800;letter-spacing:-.5px}
+  .logo span{color:var(--accent)}
+  .switch{position:relative;width:56px;height:30px;flex-shrink:0}
+  .switch input{opacity:0;width:0;height:0}
+  .slider{position:absolute;inset:0;background:var(--chip);border:1px solid var(--border);border-radius:30px;cursor:pointer;transition:.25s}
+  .slider::before{content:"🌙";position:absolute;height:24px;width:24px;left:2px;top:2px;background:var(--card);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;transition:.25s}
+  .switch input:checked + .slider::before{transform:translateX(26px);content:"☀️"}
+  .search{max-width:1000px;margin:10px auto 0;display:flex;gap:8px}
+  .search input{flex:1;padding:11px 14px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:1rem;outline:none}
+  .search input:focus{border-color:var(--accent)}
+  .search button{padding:0 16px;border:none;border-radius:12px;background:var(--accent);color:#fff;font-size:1rem;font-weight:600;cursor:pointer}
+  main{max-width:1000px;margin:0 auto;padding:20px 16px 40px}
+  .hero{padding:10px 0 18px}
+  .hero h1{font-size:1.6rem;line-height:1.2}
+  .hero p{color:var(--muted);margin-top:6px}
+  .chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:16px;scrollbar-width:none}
+  .chips::-webkit-scrollbar{display:none}
+  .chip{white-space:nowrap;padding:8px 16px;border-radius:20px;border:1px solid var(--border);background:var(--chip);color:var(--text);font-size:.92rem;cursor:pointer}
+  .chip.active{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
+  .thumb{height:180px;display:flex;align-items:center;justify-content:center;font-size:3rem;background:linear-gradient(135deg,var(--chip),var(--card))}
+  .thumb img{width:100%;height:100%;object-fit:cover}
+  .body{padding:14px;display:flex;flex-direction:column;gap:6px;flex:1}
+  .tag{font-size:.72rem;text-transform:uppercase;letter-spacing:.5px;color:var(--accent);font-weight:700}
+  .body h3{font-size:1rem}
+  .body p{font-size:.88rem;color:var(--muted);flex:1}
+  .price{font-size:1.1rem;font-weight:800}
+  .buy{margin-top:8px;display:block;text-align:center;text-decoration:none;background:var(--accent);color:#fff;padding:10px;border-radius:10px;font-weight:600;font-size:.92rem}
+  .empty{display:none;text-align:center;color:var(--muted);padding:40px 0}
+  footer{border-top:1px solid var(--border);padding:22px 16px;text-align:center;color:var(--muted);font-size:.8rem}
+  footer p{max-width:620px;margin:0 auto 6px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="top">
+    <div class="logo">Kaddy<span>store</span></div>
+    <label class="switch" aria-label="Toggle dark and light mode">
+      <input type="checkbox" id="themeToggle">
+      <span class="slider"></span>
+    </label>
+  </div>
+  <form class="search" id="searchForm" role="search">
+    <input type="search" id="searchInput" placeholder="Search gadgets..." autocomplete="off">
+    <button type="submit">Search</button>
+  </form>
+</header>
+
+<main>
+  <section class="hero">
+    <h1>Tech that makes life better</h1>
+    <p>Hand-picked gadgets for your home, desk, travels, pets and play.</p>
+  </section>
+
+  <div class="chips" id="chips"></div>
+  <div class="grid" id="grid"></div>
+  <p class="empty" id="empty">No products found. Try another search.</p>
+</main>
+
+<footer>
+  <p><strong>Affiliate disclosure:</strong> Kaddystore is an affiliate of AliExpress. When you buy through links on this site, I may earn a small commission at no extra cost to you. Prices shown may change on AliExpress.</p>
+  <p>© <span id="year"></span> Kaddystore</p>
+</footer>
+
+<script src="products.js"></script>
+<script>
+const grid = document.getElementById("grid");
+const chipsEl = document.getElementById("chips");
+const emptyEl = document.getElementById("empty");
+const searchInput = document.getElementById("searchInput");
+let activeCat = "All";
+
+function renderChips(){
+  chipsEl.innerHTML = "";
+  ["All", ...CATEGORIES].forEach(c => {
+    const b = document.createElement("button");
+    b.className = "chip" + (c === activeCat ? " active" : "");
+    b.textContent = c;
+    b.onclick = () => { activeCat = c; renderChips(); render(); };
+    chipsEl.appendChild(b);
+  });
+}
+
+function render(){
+  const q = searchInput.value.trim().toLowerCase();
+  const list = PRODUCTS.filter(p =>
+    (activeCat === "All" || p.category === activeCat) &&
+    (!q || ((p.name||"") + " " + (p.desc||"") + " " + (p.category||"")).toLowerCase().includes(q))
+  );
+  grid.innerHTML = "";
+  list.forEach(p => {
+    const card = document.createElement("div");
+    card.className = "card";
+    const thumb = document.createElement("div");
+    thumb.className = "thumb";
+    if (p.image) {
+      const img = document.createElement("img");
+      img.src = p.image; img.alt = p.name; img.loading = "lazy";
+      img.onerror = () => { thumb.textContent = "🛍️"; };
+      thumb.appendChild(img);
+    } else { thumb.textContent = "🛍️"; }
+    const body = document.createElement("div");
+    body.className = "body";
+    body.innerHTML = '<span class="tag"></span><h3></h3><p></p><div class="price"></div>';
+    body.querySelector(".tag").textContent = p.category;
+    body.querySelector("h3").textContent = p.name;
+    body.querySelector("p").textContent = p.desc || "";
+    body.querySelector(".price").textContent = p.price || "";
+    const a = document.createElement("a");
+    a.className = "buy";
+    a.href = p.link;
+    a.target = "_blank";
+    a.rel = "sponsored noopener noreferrer";
+    a.textContent = "View on AliExpress";
+    body.appendChild(a);
+    card.append(thumb, body);
+    grid.appendChild(card);
+  });
+  emptyEl.style.display = list.length ? "none" : "block";
+}
+
+document.getElementById("searchForm").addEventListener("submit", e => { e.preventDefault(); render(); searchInput.blur(); });
+searchInput.addEventListener("input", render);
+
+const toggle = document.getElementById("themeToggle");
+function applyTheme(light){
+  document.documentElement.setAttribute("data-theme", light ? "light" : "dark");
+  toggle.checked = light;
+}
+let saved = null;
+try { saved = localStorage.getItem("kaddy-theme"); } catch(e){}
+applyTheme(saved === "light");
+toggle.addEventListener("change", () => {
+  applyTheme(toggle.checked);
+  try { localStorage.setItem("kaddy-theme", toggle.checked ? "light" : "dark"); } catch(e){}
+});
+
+document.getElementById("year").textContent = new Date().getFullYear();
+renderChips();
+render();
+</script>
+</body>
+  </html>
