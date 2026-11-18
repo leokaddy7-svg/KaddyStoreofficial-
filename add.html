@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>Kaddystore | Add Products</title>
+<title>Kaddystore | Admin</title>
 <style>
   :root{--bg:#0f1115;--card:#181b22;--text:#f2f4f8;--muted:#9aa3b2;--accent:#ff6a3d;--border:#262b36;--chip:#1f2430}
   *{box-sizing:border-box;margin:0;padding:0}
@@ -17,6 +17,7 @@
   input,select,textarea{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:1rem;font-family:inherit;outline:none}
   input:focus,select:focus,textarea:focus{border-color:var(--accent)}
   button{padding:11px 16px;border:none;border-radius:10px;background:var(--accent);color:#fff;font-size:.95rem;font-weight:600;cursor:pointer}
+  button:disabled{opacity:.6}
   button.alt{background:var(--chip);color:var(--text);border:1px solid var(--border)}
   button.del{background:transparent;color:#ff6b6b;padding:4px 8px;font-size:.85rem}
   .row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
@@ -28,20 +29,33 @@
   .item .meta small{color:var(--muted)}
   ol{padding-left:18px;color:var(--muted);font-size:.88rem}
   ol li{margin-bottom:4px}
-  textarea{min-height:140px;font-family:monospace;font-size:.78rem}
-  #msg{color:#5fd38d;font-size:.9rem;margin-top:8px;min-height:1.2em}
+  textarea{min-height:120px;font-family:monospace;font-size:.78rem}
+  .ok{color:#5fd38d;font-size:.9rem;margin-top:8px;min-height:1.2em}
+  .err{color:#ff6b6b}
+  details summary{cursor:pointer;font-weight:600}
 </style>
 </head>
 <body>
 
-<h1>Add products</h1>
-<p class="sub">Fill in one product, tap Add, repeat. Then copy the result into <b>products.js</b> and re-upload it.</p>
+<h1>Kaddystore admin</h1>
+<p class="sub">Add products here, then tap <b>Publish to site</b>.</p>
+
+<details class="box" id="setup">
+  <summary>Connect to GitHub (one-time setup)</summary>
+  <label>Repository (owner/name)</label>
+  <input id="repo" type="text" value="leokaddy7-svg/KaddyStoreofficial-" autocapitalize="off" autocomplete="off">
+  <label>GitHub access token</label>
+  <input id="token" type="password" placeholder="github_pat_..." autocapitalize="off" autocomplete="off">
+  <p class="sub" style="margin-top:8px">Saved only in this browser. Never share it with anyone.</p>
+  <div class="row"><button class="alt" id="saveGh">Save connection</button></div>
+  <div class="ok" id="ghMsg"></div>
+</details>
 
 <div class="box">
   <ol>
-    <li>Open the product on AliExpress and copy your <b>affiliate link</b> (from the affiliate portal / share link).</li>
+    <li>Open the product on AliExpress and copy your <b>affiliate link</b>.</li>
     <li>Copy the <b>product title</b> and note the <b>price</b>.</li>
-    <li>Image: in your phone browser, long-press the main product image, then tap <b>Copy image address</b>.</li>
+    <li>Image: long-press the main product image in your phone browser, then tap <b>Copy image address</b>.</li>
   </ol>
 </div>
 
@@ -62,7 +76,7 @@
     <button id="addBtn">Add product</button>
     <button class="alt" id="clearBtn">Clear form</button>
   </div>
-  <div id="msg"></div>
+  <div class="ok" id="msg"></div>
 </div>
 
 <h2>New category</h2>
@@ -76,18 +90,21 @@
 
 <h2>Publish</h2>
 <div class="box">
-  <p class="sub">Copy this, replace everything inside <b>products.js</b> on your host, then re-upload.</p>
-  <textarea id="out" readonly></textarea>
-  <div class="row">
-    <button id="copyBtn">Copy products.js</button>
-    <button class="alt" id="dlBtn">Download file</button>
-    <button class="alt" id="resetBtn">Reset to published</button>
-  </div>
+  <button id="pubBtn" style="width:100%">Publish to site</button>
+  <div class="ok" id="pubMsg"></div>
+  <details style="margin-top:14px">
+    <summary>Backup: copy the file manually</summary>
+    <textarea id="out" readonly style="margin-top:10px"></textarea>
+    <div class="row">
+      <button class="alt" id="copyBtn">Copy products.js</button>
+      <button class="alt" id="resetBtn">Reset to published</button>
+    </div>
+  </details>
 </div>
 
 <script src="products.js"></script>
 <script>
-const KEY = "kaddy-admin-v1";
+const KEY = "kaddy-admin-v1", GHKEY = "kaddy-admin-gh";
 let state;
 try { state = JSON.parse(localStorage.getItem(KEY)); } catch(e){ state = null; }
 if (!state || !state.products) state = { categories: [...CATEGORIES], products: JSON.parse(JSON.stringify(PRODUCTS)) };
@@ -97,7 +114,19 @@ function save(){ try { localStorage.setItem(KEY, JSON.stringify(state)); } catch
 function buildFile(){
   return "const CATEGORIES = " + JSON.stringify(state.categories) + ";\n\nconst PRODUCTS = " + JSON.stringify(state.products, null, 2) + ";\n";
 }
-function flash(t){ $("msg").textContent = t; setTimeout(() => { $("msg").textContent = ""; }, 2500); }
+function say(id, t, isErr){ const el = $(id); el.textContent = t; el.className = "ok" + (isErr ? " err" : ""); }
+function flash(t){ say("msg", t); setTimeout(() => say("msg", ""), 3000); }
+
+/* GitHub connection */
+try {
+  const g = JSON.parse(localStorage.getItem(GHKEY));
+  if (g) { if (g.repo) $("repo").value = g.repo; if (g.token) $("token").value = g.token; }
+  if (!g || !g.token) $("setup").open = true;
+} catch(e){ $("setup").open = true; }
+$("saveGh").onclick = () => {
+  try { localStorage.setItem(GHKEY, JSON.stringify({ repo: $("repo").value.trim(), token: $("token").value.trim() })); say("ghMsg", "Saved."); }
+  catch(e){ say("ghMsg", "Could not save in this browser.", true); }
+};
 
 function renderCats(){
   const cur = $("cat").value;
@@ -105,6 +134,7 @@ function renderCats(){
   state.categories.forEach(c => { const o = document.createElement("option"); o.value = o.textContent = c; $("cat").appendChild(o); });
   if (cur && state.categories.includes(cur)) $("cat").value = cur;
 }
+function ph(){ const d = document.createElement("div"); d.className = "ph"; d.textContent = "🛍️"; return d; }
 function renderList(){
   const box = $("list");
   box.innerHTML = "";
@@ -116,7 +146,6 @@ function renderList(){
     let thumb;
     if (p.image) { thumb = document.createElement("img"); thumb.src = p.image; thumb.onerror = () => { thumb.replaceWith(ph()); }; }
     else thumb = ph();
-    function ph(){ const d = document.createElement("div"); d.className = "ph"; d.textContent = "🛍️"; return d; }
     const meta = document.createElement("div");
     meta.className = "meta";
     const b = document.createElement("b"); b.textContent = p.name;
@@ -141,7 +170,7 @@ $("addBtn").onclick = () => {
   });
   save(); renderAll();
   ["link","name","price","image","desc"].forEach(id => $(id).value = "");
-  flash("Added. Don't forget to copy products.js below when done.");
+  flash("Added. Scroll down and tap Publish to site when you're done.");
 };
 $("clearBtn").onclick = () => ["link","name","price","image","desc"].forEach(id => $(id).value = "");
 $("addCatBtn").onclick = () => {
@@ -150,13 +179,8 @@ $("addCatBtn").onclick = () => {
   $("newCat").value = "";
 };
 $("copyBtn").onclick = async () => {
-  try { await navigator.clipboard.writeText(buildFile()); flash("Copied!"); }
-  catch(e){ $("out").select(); document.execCommand("copy"); flash("Copied!"); }
-};
-$("dlBtn").onclick = () => {
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(new Blob([buildFile()], {type:"text/javascript"}));
-  a.download = "products.js"; a.click();
+  try { await navigator.clipboard.writeText(buildFile()); say("pubMsg", "Copied!"); }
+  catch(e){ $("out").select(); document.execCommand("copy"); say("pubMsg", "Copied!"); }
 };
 $("resetBtn").onclick = () => {
   if (confirm("Discard unpublished changes and go back to the published list?")) {
@@ -164,6 +188,30 @@ $("resetBtn").onclick = () => {
     save(); renderAll();
   }
 };
+
+/* Publish straight to GitHub */
+$("pubBtn").onclick = async () => {
+  const repo = $("repo").value.trim(), token = $("token").value.trim();
+  if (!repo || !token) { $("setup").open = true; say("pubMsg", "Connect to GitHub first (open the setup section at the top).", true); return; }
+  const url = "https://api.github.com/repos/" + repo + "/contents/products.js";
+  const headers = { "Authorization": "Bearer " + token, "Accept": "application/vnd.github+json" };
+  $("pubBtn").disabled = true;
+  say("pubMsg", "Publishing...");
+  try {
+    let sha;
+    const g = await fetch(url + "?ref=main", { headers, cache: "no-store" });
+    if (g.ok) { sha = (await g.json()).sha; }
+    else if (g.status !== 404) { throw new Error("Could not reach your repository (" + g.status + "). Check the repo name and token."); }
+    const body = { message: "Update products", content: btoa(unescape(encodeURIComponent(buildFile()))), branch: "main" };
+    if (sha) body.sha = sha;
+    const p = await fetch(url, { method: "PUT", headers: { ...headers, "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    if (!p.ok) { const e = await p.json().catch(() => ({})); throw new Error(e.message || ("Publish failed (" + p.status + ")")); }
+    say("pubMsg", "Published! Your site will update in about a minute.");
+  } catch (err) {
+    say("pubMsg", "Error: " + err.message, true);
+  } finally { $("pubBtn").disabled = false; }
+};
+
 renderAll();
 </script>
 </body>
