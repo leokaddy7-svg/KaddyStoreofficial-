@@ -94,7 +94,7 @@
   <p>© <span id="year"></span> Kaddystore</p>
 </footer>
 
-<script src="products.js"></script>
+<script>document.write('<script src="products.js?t=' + Date.now() + '"><\/script>');</script>
 <script>
 const grid = document.getElementById("grid");
 const chipsEl = document.getElementById("chips");
