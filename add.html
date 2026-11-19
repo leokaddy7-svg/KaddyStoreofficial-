@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex, nofollow">
 <title>Kaddystore | Admin</title>
 <style>
-  :root{--bg:#0f1115;--card:#181b22;--text:#f2f4f8;--muted:#9aa3b2;--accent:#ff6a3d;--border:#262b36;--chip:#1f2430}
+  :root{--bg:#0f1115;--card:#181b22;--text:#f2f4f8;--muted:#9aa3b2;--accent:#e31b23;--border:#2b1214;--chip:#1f2430}
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;padding:16px;max-width:640px;margin:0 auto 60px}
   h1{font-size:1.4rem;margin:8px 0 4px}
@@ -20,9 +20,10 @@
   button{padding:11px 16px;border:none;border-radius:10px;background:var(--accent);color:#fff;font-size:.95rem;font-weight:600;cursor:pointer}
   button:disabled{opacity:.6}
   button.alt{background:var(--chip);color:var(--text);border:1px solid var(--border)}
-  button.del{background:transparent;color:#ff6b6b;padding:4px 8px;font-size:.85rem}
+  button.small{padding:6px 10px;font-size:.85rem}
+  button.del{background:transparent;color:#ff6b6b;padding:6px 8px;font-size:.85rem}
   .row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
-  .item{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
+  .item{display:flex;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
   .item:last-child{border-bottom:none}
   .item img,.item .ph{width:46px;height:46px;border-radius:8px;object-fit:cover;background:var(--chip);display:flex;align-items:center;justify-content:center;flex-shrink:0}
   .item .meta{flex:1;min-width:0}
@@ -60,7 +61,7 @@
   </ol>
 </div>
 
-<div class="box">
+<div class="box" id="formBox">
   <label>Affiliate link *</label>
   <input id="link" type="url" placeholder="https://s.click.aliexpress.com/e/...">
   <label>Product name *</label>
@@ -81,6 +82,17 @@
     <button class="alt" id="clearBtn">Clear form</button>
   </div>
   <div class="ok" id="msg"></div>
+</div>
+
+<h2>Bulk add (move your Linktree links)</h2>
+<div class="box">
+  <p class="sub">One product per line. Any of these work:<br><b>link</b><br><b>Name | link</b><br><b>Name | link | price</b><br>Then tap <b>Edit</b> on each product below to add its photo, price and description.</p>
+  <label>Category for all of these</label>
+  <select id="bulkCat"></select>
+  <label>Paste your lines</label>
+  <textarea id="bulkText" placeholder="Mini USB Printer | https://s.click.aliexpress.com/e/_abc | $58.03"></textarea>
+  <div class="row"><button id="bulkBtn">Add all</button></div>
+  <div class="ok" id="bulkMsg"></div>
 </div>
 
 <h2>New category</h2>
@@ -109,7 +121,7 @@
 <script src="products.js"></script>
 <script>
 const KEY = "kaddy-admin-v1", GHKEY = "kaddy-admin-gh";
-let state;
+let state, editIndex = null;
 try { state = JSON.parse(localStorage.getItem(KEY)); } catch(e){ state = null; }
 if (!state || !state.products) state = { categories: [...CATEGORIES], products: JSON.parse(JSON.stringify(PRODUCTS)) };
 
@@ -119,7 +131,7 @@ function buildFile(){
   return "const CATEGORIES = " + JSON.stringify(state.categories) + ";\n\nconst PRODUCTS = " + JSON.stringify(state.products, null, 2) + ";\n";
 }
 function say(id, t, isErr){ const el = $(id); el.textContent = t; el.className = "ok" + (isErr ? " err" : ""); }
-function flash(t){ say("msg", t); setTimeout(() => say("msg", ""), 3000); }
+function flash(t){ say("msg", t); setTimeout(() => say("msg", ""), 4000); }
 
 /* GitHub connection */
 try {
@@ -136,13 +148,35 @@ function gh(){
   return { repo, token, headers: { "Authorization": "Bearer " + token, "Accept": "application/vnd.github+json" } };
 }
 
-function renderCats(){
-  const cur = $("cat").value;
-  $("cat").innerHTML = "";
-  state.categories.forEach(c => { const o = document.createElement("option"); o.value = o.textContent = c; $("cat").appendChild(o); });
-  if (cur && state.categories.includes(cur)) $("cat").value = cur;
+function fillSelect(sel){
+  const cur = sel.value;
+  sel.innerHTML = "";
+  state.categories.forEach(c => { const o = document.createElement("option"); o.value = o.textContent = c; sel.appendChild(o); });
+  if (cur && state.categories.includes(cur)) sel.value = cur;
 }
+function renderCats(){ fillSelect($("cat")); fillSelect($("bulkCat")); }
 function ph(){ const d = document.createElement("div"); d.className = "ph"; d.textContent = "🛍️"; return d; }
+
+function resetForm(){
+  ["link","name","price","image","desc"].forEach(id => $(id).value = "");
+  say("imgMsg", "");
+  editIndex = null;
+  $("addBtn").textContent = "Add product";
+}
+function startEdit(i){
+  const p = state.products[i];
+  editIndex = i;
+  $("link").value = p.link || "";
+  $("name").value = p.name || "";
+  $("price").value = p.price || "";
+  $("image").value = p.image || "";
+  $("desc").value = p.desc || "";
+  if (state.categories.includes(p.category)) $("cat").value = p.category;
+  $("addBtn").textContent = "Save changes";
+  $("formBox").scrollIntoView({ behavior: "smooth" });
+  flash("Editing \"" + (p.name || "product") + "\". Change what you need, then tap Save changes.");
+}
+
 function renderList(){
   const box = $("list");
   box.innerHTML = "";
@@ -159,10 +193,13 @@ function renderList(){
     const b = document.createElement("b"); b.textContent = p.name;
     const s = document.createElement("small"); s.textContent = (p.category || "") + (p.price ? " · " + p.price : "");
     meta.append(b, s);
+    const e = document.createElement("button");
+    e.className = "alt small"; e.textContent = "Edit";
+    e.onclick = () => startEdit(i);
     const d = document.createElement("button");
     d.className = "del"; d.textContent = "Delete";
-    d.onclick = () => { state.products.splice(i, 1); save(); renderAll(); };
-    row.append(thumb, meta, d);
+    d.onclick = () => { state.products.splice(i, 1); editIndex = null; $("addBtn").textContent = "Add product"; save(); renderAll(); };
+    row.append(thumb, meta, e, d);
     box.appendChild(row);
   });
 }
@@ -214,16 +251,43 @@ $("imgFile").onchange = async () => {
 $("addBtn").onclick = () => {
   const link = $("link").value.trim(), name = $("name").value.trim();
   if (!link || !name) { flash("Link and name are required."); return; }
-  state.products.unshift({
+  const item = {
     name, category: $("cat").value, price: $("price").value.trim(),
     link, image: $("image").value.trim(), desc: $("desc").value.trim()
+  };
+  const editing = editIndex !== null;
+  if (editing) state.products[editIndex] = item; else state.products.unshift(item);
+  save(); renderAll(); resetForm();
+  flash(editing ? "Saved. Tap Publish to site when you're done." : "Added. Scroll down and tap Publish to site when you're done.");
+};
+$("clearBtn").onclick = resetForm;
+
+/* Bulk add */
+function parseLine(line){
+  let parts = line.split("|").map(s => s.trim()).filter(Boolean);
+  if (parts.length === 1) {
+    const m = line.match(/^(.*?)\s*(https?:\/\/\S+)\s*(.*)$/);
+    if (m) parts = [m[1], m[2], m[3]].map(s => s.trim()).filter(Boolean);
+  }
+  const li = parts.findIndex(s => /^https?:\/\//i.test(s));
+  if (li < 0) return null;
+  const rest = parts.filter((_, i) => i !== li);
+  return { link: parts[li], name: rest[0] || "New product (tap Edit to rename)", price: rest[1] || "" };
+}
+$("bulkBtn").onclick = () => {
+  const lines = $("bulkText").value.split("\n").map(l => l.trim()).filter(Boolean);
+  let added = 0, skipped = 0;
+  lines.reverse().forEach(line => {
+    const p = parseLine(line);
+    if (!p) { skipped++; return; }
+    state.products.unshift({ name: p.name, category: $("bulkCat").value, price: p.price, link: p.link, image: "", desc: "" });
+    added++;
   });
   save(); renderAll();
-  ["link","name","price","image","desc"].forEach(id => $(id).value = "");
-  say("imgMsg", "");
-  flash("Added. Scroll down and tap Publish to site when you're done.");
+  $("bulkText").value = "";
+  say("bulkMsg", added + " product(s) added" + (skipped ? ", " + skipped + " line(s) skipped (no link found)" : "") + ". Tap Edit on each one below to add its photo and price, then Publish.", skipped && !added);
 };
-$("clearBtn").onclick = () => { ["link","name","price","image","desc"].forEach(id => $(id).value = ""); say("imgMsg", ""); };
+
 $("addCatBtn").onclick = () => {
   const c = $("newCat").value.trim();
   if (c && !state.categories.includes(c)) { state.categories.push(c); save(); renderAll(); $("cat").value = c; }
@@ -236,6 +300,7 @@ $("copyBtn").onclick = async () => {
 $("resetBtn").onclick = () => {
   if (confirm("Discard unpublished changes and go back to the published list?")) {
     state = { categories: [...CATEGORIES], products: JSON.parse(JSON.stringify(PRODUCTS)) };
+    editIndex = null; $("addBtn").textContent = "Add product";
     save(); renderAll();
   }
 };
@@ -265,4 +330,4 @@ $("pubBtn").onclick = async () => {
 renderAll();
 </script>
 </body>
-  </html>
+                                                                             </html>
