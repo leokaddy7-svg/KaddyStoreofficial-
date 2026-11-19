@@ -2,6 +2,38 @@ const CATEGORIES = ["Gaming","Travel","Kitchen","Office","Smart Home","Wearables
 
 const PRODUCTS = [
   {
+    "name": "High Resilience Swivel Gaming Chair Ergonomic Desk Chair Adjustable Rotatable Office Chair for Home Indoor Use",
+    "category": "Gaming",
+    "price": "$146.57",
+    "link": "https://s.click.aliexpress.com/e/_EJfC3kE",
+    "image": "images/high-resilience-swivel-gaming-chair-ergo-1795101749010.jpg",
+    "desc": ""
+  },
+  {
+    "name": "Living Room Lustre Candle E14 Pendant Light Home Decor Crystal Led Luminarias Indoor Light Luxury French Black Glass Chandelier",
+    "category": "Smart Home",
+    "price": "$199.49",
+    "link": "https://s.click.aliexpress.com/e/_EHLEh2A",
+    "image": "images/living-room-lustre-candle-e14-pendant-li-1795101707393.jpg",
+    "desc": ""
+  },
+  {
+    "name": "Unisex Casual Four Seasons Slippers Sandals Women Comfortable Home Slippers Breathable Slip-On Shoes For Women And Men Shoes",
+    "category": "Travel",
+    "price": "$13.22",
+    "link": "https://s.click.aliexpress.com/e/_Ewb0b7C",
+    "image": "images/unisex-casual-four-seasons-slippers-sand-1795101664261.jpg",
+    "desc": ""
+  },
+  {
+    "name": "Household Enamel Colored Flower Glass Water Cup Round Coffee Cup Breakfast Milk Juice Cup",
+    "category": "Kitchen",
+    "price": "$15.62",
+    "link": "https://s.click.aliexpress.com/e/_EwPkFp4",
+    "image": "images/household-enamel-colored-flower-glass-wa-1795101629047.jpg",
+    "desc": ""
+  },
+  {
     "name": "1pc/2pcs/3pcs Cyberpunk Robot Face Design Backpack, Lunch Bag, Storage Bag with Neon Blue and Purple Glowing Effect",
     "category": "Gaming",
     "price": "$37.54",
