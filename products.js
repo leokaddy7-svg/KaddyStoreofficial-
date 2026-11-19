@@ -2,6 +2,78 @@ const CATEGORIES = ["Gaming","Travel","Kitchen","Office","Smart Home","Wearables
 
 const PRODUCTS = [
   {
+    "name": "2026 New Electric Portable Blender",
+    "category": "Kitchen",
+    "price": "$81.53",
+    "link": "https://s.click.aliexpress.com/e/_EGoWMzg",
+    "image": "images/2026-new-electric-portable-blender-1795080123538.jpg",
+    "desc": ""
+  },
+  {
+    "name": "Alarm Clock for Kids Ok to Wake Children with Sleep Training and Sound Machine Birthday Gift for Boy Girls",
+    "category": "Gifts",
+    "price": "$37.44",
+    "link": "https://s.click.aliexpress.com/e/_EHUul0i",
+    "image": "images/alarm-clock-for-kids-ok-to-wake-children-1795080103857.jpg",
+    "desc": ""
+  },
+  {
+    "name": "Automatic Food Vacuum Sealer with Preservation Modes Plastic Bag Sealing Machine Food Storage Vacuum Package Machine for Kitchen",
+    "category": "Kitchen",
+    "price": "$86.20",
+    "link": "https://s.click.aliexpress.com/e/_EyQEa9u",
+    "image": "images/automatic-food-vacuum-sealer-with-preser-1795080085891.jpg",
+    "desc": ""
+  },
+  {
+    "name": "Gen1 Tuya Ivy Smart Planter,Endless Fun Over 49 Rich Expressions,7 smart sensors,AI Chips Make Raising Plants Easy and Fun",
+    "category": "Gifts",
+    "price": "$121.09",
+    "link": "https://s.click.aliexpress.com/e/_ExPVi7y",
+    "image": "images/gen1-tuya-ivy-smart-planter-endless-fun--1795080065929.jpg",
+    "desc": ""
+  },
+  {
+    "name": "Original MIJIA Smart Eye Massager Zone Massage Visual Folding Massage Glasses Custom Eye Health Work For Mi Home APP NEW",
+    "category": "Wearables",
+    "price": "$106.66",
+    "link": "https://s.click.aliexpress.com/e/_Evngn70",
+    "image": "images/original-mijia-smart-eye-massager-zone-m-1795080043478.jpg",
+    "desc": ""
+  },
+  {
+    "name": "New Design Home Decoration Wall Lamp PLA Material 3D Print Lampshade Sconce Light Astronaut Climbing Moon Style Children Lustres",
+    "category": "Smart Home",
+    "price": "$23.85",
+    "link": "https://s.click.aliexpress.com/e/_EIsBoMW",
+    "image": "images/new-design-home-decoration-wall-lamp-pla-1795080023847.jpg",
+    "desc": ""
+  },
+  {
+    "name": "CENRR 98000PA Car Vacuum Cleaner Portable Wireless Cleaner Powerful Strong Suction Handheld Cleaning Machine for Home Appliance",
+    "category": "Car",
+    "price": "$39.39",
+    "link": "https://s.click.aliexpress.com/e/_Ezo5BEq",
+    "image": "images/cenrr-98000pa-car-vacuum-cleaner-portabl-1795080005430.jpg",
+    "desc": ""
+  },
+  {
+    "name": "4-in-1 Vegetable Cutter, for Slicing & Dicing Automatic Vegetable Carrot Potato Chopper Slice Shred And Diced, for Home Kitchen",
+    "category": "Kitchen",
+    "price": "$210.93",
+    "link": "https://s.click.aliexpress.com/e/_EvlkyTM",
+    "image": "images/4-in-1-vegetable-cutter-for-slicing-dici-1795079986337.jpg",
+    "desc": ""
+  },
+  {
+    "name": "50-100LBS Pedal Tension Rope Men Abdominal Strengthen Elastic Band Tension Rope Expand Chest Strength Exercise Fitness Equipment",
+    "category": "Smart Home",
+    "price": "$30.69",
+    "link": "https://s.click.aliexpress.com/e/_EIOAxxo",
+    "image": "images/50-100lbs-pedal-tension-rope-men-abdomin-1795079946597.jpg",
+    "desc": ""
+  },
+  {
     "name": "3D Dynamic Galaxy Projector Romantic Gift Children Adult Bedroom Night Light Projector",
     "category": "Smart Home",
     "price": "$210.03",
