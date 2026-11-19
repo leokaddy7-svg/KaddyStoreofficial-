@@ -2,6 +2,30 @@ const CATEGORIES = ["Gaming","Travel","Kitchen","Office","Smart Home","Wearables
 
 const PRODUCTS = [
   {
+    "name": "HOMEFISH 50cm Monitor Light Bar USB Desk Lamp",
+    "category": "Gaming",
+    "price": "$28.95",
+    "link": "https://s.click.aliexpress.com/e/_EQNVDYK",
+    "image": "images/homefish-50cm-monitor-light-bar-usb-desk-1795075964074.jpg",
+    "desc": ""
+  },
+  {
+    "name": "New Posture Corrector For Men&Women-Adjustable Upper Back Brace For Clavicle Support and Pain Relief From neck,Back&Shoulder",
+    "category": "Wearables",
+    "price": "$10.32",
+    "link": "https://s.click.aliexpress.com/e/_EJ05U8I",
+    "image": "images/new-posture-corrector-for-men-women-adju-1795075921437.jpg",
+    "desc": ""
+  },
+  {
+    "name": "2026 Hot-selling Real-time Translation Headphones Wireless Headphones Noise Reduction Waterproof Smart Touch Earplugs for Children",
+    "category": "Gifts",
+    "price": "$27.71",
+    "link": "https://s.click.aliexpress.com/e/_EzFtLae",
+    "image": "images/2026-hot-selling-real-time-translation-h-1795075834786.jpg",
+    "desc": ""
+  },
+  {
     "name": "Magnetic desktop foldable phone holder",
     "category": "Office",
     "price": "$27.14",
