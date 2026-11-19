@@ -2,6 +2,14 @@ const CATEGORIES = ["Gaming","Travel","Kitchen","Office","Smart Home","Wearables
 
 const PRODUCTS = [
   {
+    "name": "1pc/2pcs/3pcs Cyberpunk Robot Face Design Backpack, Lunch Bag, Storage Bag with Neon Blue and Purple Glowing Effect",
+    "category": "Gaming",
+    "price": "$37.54",
+    "link": "https://s.click.aliexpress.com/e/_EGCDIum",
+    "image": "images/1pc-2pcs-3pcs-cyberpunk-robot-face-desig-1795100426900.jpg",
+    "desc": ""
+  },
+  {
     "name": "2026 New Electric Portable Blender",
     "category": "Kitchen",
     "price": "$81.53",
