@@ -2,6 +2,14 @@ const CATEGORIES = ["Gaming","Travel","Kitchen","Office","Smart Home","Wearables
 
 const PRODUCTS = [
   {
+    "name": "Magnetic desktop foldable phone holder",
+    "category": "Office",
+    "price": "$27.14",
+    "link": "https://s.click.aliexpress.com/e/_Ex5HCUI",
+    "image": "images/magnetic-desktop-foldable-phone-holder-1795073783657.jpg",
+    "desc": "Holds phone firmly"
+  },
+  {
     "name": "Mini USB Printer",
     "category": "Office",
     "price": "$58.03",
