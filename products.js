@@ -2,6 +2,14 @@ const CATEGORIES = ["Gaming","Travel","Kitchen","Office","Smart Home","Wearables
 
 const PRODUCTS = [
   {
+    "name": "44Pcs 6CM Christmas Ball Christmas Decoration Xmas Tree Pendent Ornaments Home Decor Navidad Party New Year 2026 Party Supplies",
+    "category": "Smart Home",
+    "price": "$40.62",
+    "link": "https://s.click.aliexpress.com/e/_EQ4eGNC",
+    "image": "images/44pcs-6cm-christmas-ball-christmas-decor-1795171363606.jpg",
+    "desc": ""
+  },
+  {
     "name": "Solid Color Large Velvet Christmas Bow Long Streamers Wrinkle Resistant Christmas Tree Topper Bow Long Streamers Elegance",
     "category": "Smart Home",
     "price": "$42.50",
