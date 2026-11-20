@@ -2,6 +2,14 @@ const CATEGORIES = ["Gaming","Travel","Kitchen","Office","Smart Home","Wearables
 
 const PRODUCTS = [
   {
+    "name": "2026 Christmas Mouse Advent Calendar 2D Acrylic Animal Ornaments 24 Days Christmas Mice Ornaments for Living Room Front Door",
+    "category": "Gifts",
+    "price": "$36.93",
+    "link": "https://s.click.aliexpress.com/e/_Eueqmdo",
+    "image": "images/2026-christmas-mouse-advent-calendar-2d--1795171546612.jpg",
+    "desc": ""
+  },
+  {
     "name": "44Pcs 6CM Christmas Ball Christmas Decoration Xmas Tree Pendent Ornaments Home Decor Navidad Party New Year 2026 Party Supplies",
     "category": "Smart Home",
     "price": "$40.62",
