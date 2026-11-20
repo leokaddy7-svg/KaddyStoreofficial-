@@ -2,6 +2,14 @@ const CATEGORIES = ["Gaming","Travel","Kitchen","Office","Smart Home","Wearables
 
 const PRODUCTS = [
   {
+    "name": "Artificial Candy Cane Ornaments Red Green Striped Plastic Candy Canes Christmas Tree Hanging Decor for Holiday Party Home Decor",
+    "category": "Gifts",
+    "price": "$6.63",
+    "link": "https://s.click.aliexpress.com/e/_ExbRJMi",
+    "image": "images/artificial-candy-cane-ornaments-red-gree-1795171686398.jpg",
+    "desc": ""
+  },
+  {
     "name": "2026 Christmas Mouse Advent Calendar 2D Acrylic Animal Ornaments 24 Days Christmas Mice Ornaments for Living Room Front Door",
     "category": "Gifts",
     "price": "$36.93",
