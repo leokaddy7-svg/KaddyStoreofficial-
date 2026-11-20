@@ -2,6 +2,14 @@ const CATEGORIES = ["Gaming","Travel","Kitchen","Office","Smart Home","Wearables
 
 const PRODUCTS = [
   {
+    "name": "1CM 100pcs Color Goose Stone Luminous Stone Garden Fish Tank Landscape Glow-in-the-dark Stone Decoration Artificial Fluorescent",
+    "category": "Smart Home",
+    "price": "$13.85",
+    "link": "https://s.click.aliexpress.com/e/_EyW0jFu",
+    "image": "images/1cm-100pcs-color-goose-stone-luminous-st-1795171053396.jpg",
+    "desc": ""
+  },
+  {
     "name": "High Resilience Swivel Gaming Chair Ergonomic Desk Chair Adjustable Rotatable Office Chair for Home Indoor Use",
     "category": "Gaming",
     "price": "$146.57",
