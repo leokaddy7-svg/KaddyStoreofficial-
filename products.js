@@ -2,6 +2,14 @@ const CATEGORIES = ["Gaming","Travel","Kitchen","Office","Smart Home","Wearables
 
 const PRODUCTS = [
   {
+    "name": "Solid Color Large Velvet Christmas Bow Long Streamers Wrinkle Resistant Christmas Tree Topper Bow Long Streamers Elegance",
+    "category": "Smart Home",
+    "price": "$42.50",
+    "link": "https://s.click.aliexpress.com/e/_EHe8MMI",
+    "image": "images/solid-color-large-velvet-christmas-bow-l-1795171215687.jpg",
+    "desc": ""
+  },
+  {
     "name": "1CM 100pcs Color Goose Stone Luminous Stone Garden Fish Tank Landscape Glow-in-the-dark Stone Decoration Artificial Fluorescent",
     "category": "Smart Home",
     "price": "$13.85",
